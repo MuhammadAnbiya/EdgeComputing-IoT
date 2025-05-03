@@ -17,7 +17,6 @@
 #define MQ135_PIN 35
 #define MQ7_PIN   32
 
-// === SENSOR & AKTUATOR ===
 DHT dht(DHTPIN, DHTTYPE);
 BH1750 lightMeter;
 Servo myservo;
