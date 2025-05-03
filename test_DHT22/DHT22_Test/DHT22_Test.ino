@@ -6,7 +6,7 @@
 //DHT dht(DHTPIN, DHTTYPE);
 //
 //void setup() {
-//  Serial.begin(9600);
+//  Serial.begin(115200);
 //  Serial.println("Mulai membaca sensor DHT22...");
 //  dht.begin();
 //}
@@ -29,15 +29,17 @@
 //  Serial.println("%");
 //}
 
+
+
 #include "DHT.h"
 
 #define DHTPIN 2        // Pin data DHT22
-#define DHTTYPE DHT22   // Tipe sensor
+#define DHTTYPE DHT22  // Tipe sensor
 
 DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Mulai membaca sensor DHT22...");
   dht.begin();
 }

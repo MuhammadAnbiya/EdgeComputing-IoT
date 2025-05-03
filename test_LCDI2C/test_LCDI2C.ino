@@ -18,7 +18,7 @@ int speeds[7] = {
   67, // 0.2 detik per geser
   60,
   65,
-  67,
+  70,
   70,
   70,
   70
