@@ -1,12 +1,20 @@
 #include <Wire.h>
 //#include <BH1750.h>
+#include "DHT.h"
 
+
+#define DHTPIN 27         
+#define DHTTYPE DHT11 
 #define BUZZER_PIN 14
 
+
 //BH1750 lightMeter;
+DHT dht(DHTPIN, DHTTYPE);
+
 
 void setup(){
   Serial.begin(9600);
+  dht.begin();
 //  Wire.begin(21, 22);
 
 //  if (lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)){
@@ -27,7 +35,20 @@ void loop() {
   delay(1000);
   noTone(BUZZER_PIN);
   delay(1000);
+
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (isnan(h) || isnan(t)) {
+    Serial.println("Gagal membaca dari sensor DHT22!");
+  } else {
+    Serial.print("Suhu: ");
+    Serial.print(t);
+    Serial.print("°C  |  Kelembapan: ");
+    Serial.print(h);
+    Serial.println("%");
+  }
   
-  //  delay(2000);
+  delay(2000);
 
  }
