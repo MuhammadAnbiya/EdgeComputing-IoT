@@ -39,7 +39,7 @@ void cekSuhuKelembapan() {
   Serial.print(kelembapan);
   Serial.println("%");
 
-  if (suhu > 32) {
+  if (suhu > 31) {
     tone(BUZZER_PIN, 1000);
     digitalWrite(RELAY_PIN, LOW);
     digitalWrite(LED_MERAH, HIGH);
@@ -99,8 +99,8 @@ void tampilkanLCD() {
   lcd.print((int)suhu);
   lcd.print((char)223);
   lcd.print(" H:");
-  lcd.print("%");
   lcd.print((int)kelembapan);
+  lcd.print("%");
   lcd.print(" L:");
   lcd.print(ldrVal);
 

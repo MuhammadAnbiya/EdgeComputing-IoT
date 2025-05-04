@@ -25,7 +25,7 @@ int speeds[7] = {
 };
 
 void setup() {
-  Wire.begin(18, 19);    // ESP32 SDA dan SCL
+  Wire.begin(21, 22);    // ESP32 SDA dan SCL
   lcd.begin(16, 2);      // Inisialisasi LCD
   lcd.backlight();       // Nyalakan backlight
   lcd.clear();
