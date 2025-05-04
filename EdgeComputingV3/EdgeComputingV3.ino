@@ -1,4 +1,5 @@
 #include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 #include "DHT.h"
 #include <ESP32Servo.h>
 
@@ -16,24 +17,29 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 Servo myServo;
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Variabel global
+float suhu, kelembapan;
+int ldrVal, mq2Val, mq7Val, mq135Val;
 
 // === FUNGSI DHT11, Relay, Buzzer, dan LED ===
 void cekSuhuKelembapan() {
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
+  kelembapan = dht.readHumidity();
+  suhu = dht.readTemperature();
 
-  if (isnan(h) || isnan(t)) {
+  if (isnan(kelembapan) || isnan(suhu)) {
     Serial.println("[DHT11] Gagal membaca data!");
     return;
   }
 
   Serial.print("[DHT11] Suhu: ");
-  Serial.print(t);
+  Serial.print(suhu);
   Serial.print("°C | Kelembapan: ");
-  Serial.print(h);
+  Serial.print(kelembapan);
   Serial.println("%");
 
-  if (t > 32) {
+  if (suhu > 32) {
     tone(BUZZER_PIN, 1000);
     digitalWrite(RELAY_PIN, LOW);
     digitalWrite(LED_MERAH, HIGH);
@@ -50,10 +56,10 @@ void cekSuhuKelembapan() {
 
 // === FUNGSI LDR ===
 void bacaLDR() {
-  int ldrValue = analogRead(LDR_PIN);
+  ldrVal = analogRead(LDR_PIN);
   Serial.print("[LDR] Nilai Cahaya: ");
-  Serial.print(ldrValue);
-  if (ldrValue < 1000) {
+  Serial.print(ldrVal);
+  if (ldrVal < 1000) {
     Serial.println(" => Gelap");
   } else {
     Serial.println(" => Terang");
@@ -62,18 +68,16 @@ void bacaLDR() {
 
 // === FUNGSI MQ ===
 void bacaMQ() {
-  int mq2 = analogRead(MQ2_PIN);
-  int mq7 = analogRead(MQ7_PIN);
-  int mq135 = analogRead(MQ135_PIN);
+  mq2Val = analogRead(MQ2_PIN);    // CH4
+  mq7Val = analogRead(MQ7_PIN);    // CO
+  mq135Val = analogRead(MQ135_PIN); // NH3
 
-  Serial.print("[MQ2] Gas Mudah Terbakar: ");
-  Serial.println(mq2);
-
-  Serial.print("[MQ7] CO (Karbon Monoksida): ");
-  Serial.println(mq7);
-
-  Serial.print("[MQ135] Kualitas Udara: ");
-  Serial.println(mq135);
+  Serial.print("[MQ2] CH4: ");
+  Serial.println(mq2Val);
+  Serial.print("[MQ7] CO: ");
+  Serial.println(mq7Val);
+  Serial.print("[MQ135] NH3: ");
+  Serial.println(mq135Val);
 }
 
 // === FUNGSI SERVO ===
@@ -81,16 +85,43 @@ void bukaTutupServo() {
   Serial.println("[SERVO] Buka Pakan (0°)");
   myServo.write(0);
   delay(2000);
-
   Serial.println("[SERVO] Tutup Pakan (90°)");
   myServo.write(90);
   delay(2000);
 }
 
+// === TAMPILKAN DATA KE LCD ===
+void tampilkanLCD() {
+  lcd.clear();
+
+  lcd.setCursor(0, 0);
+  lcd.print("T:");
+  lcd.print((int)suhu);
+  lcd.print((char)223);
+  lcd.print(" H:");
+  lcd.print("%");
+  lcd.print((int)kelembapan);
+  lcd.print(" L:");
+  lcd.print(ldrVal);
+
+  lcd.setCursor(0, 1);
+  lcd.print("CH4:");
+  lcd.print(mq2Val / 100);
+  lcd.print(" CO:");
+  lcd.print(mq7Val / 100);
+  lcd.print(" NH:");
+  lcd.print(mq135Val / 100);
+}
+
+
 void setup() {
   Serial.begin(9600);
   dht.begin();
   myServo.attach(SERVO_PIN);
+
+  Wire.begin(21, 22); // SDA, SCL
+  lcd.init();
+  lcd.backlight();
 
   pinMode(RELAY_PIN, OUTPUT);
   pinMode(BUZZER_PIN, OUTPUT);
@@ -112,6 +143,7 @@ void loop() {
   bacaLDR();
   bacaMQ();
   bukaTutupServo();
+  tampilkanLCD();
 
   Serial.println("======= Akhir Pembacaan =======\n");
   delay(2000);
