@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include "DHT.h"
+#include <Servo.h>
 
 #define DHTPIN 27
 #define DHTTYPE DHT11
@@ -11,8 +12,10 @@
 #define MQ135_PIN 34
 
 DHT dht(DHTPIN, DHTTYPE);
+Servo myServo;
 
 void setup() {
+  myServo.attach(13)
   Serial.begin(9600);
   dht.begin();
 
@@ -69,6 +72,10 @@ void loop() {
   Serial.print(carbonMonoxide);
   Serial.print(" | Kualitas Udara (MQ-135): ");
   Serial.println(airQuality);
+
+    int smokeGas = analogRead(MQ2_PIN);
+  int carbonMonoxide = analogRead(MQ7_PIN);
+  int airQuality = analogRead(MQ135_PIN);
   Serial.println("------------------------");
   
   delay(2000);
