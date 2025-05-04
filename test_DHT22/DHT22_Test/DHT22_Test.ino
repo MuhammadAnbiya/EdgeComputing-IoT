@@ -30,34 +30,30 @@
 //}
 
 
-
 #include "DHT.h"
-
-#define DHTPIN 2        // Pin data DHT22
-#define DHTTYPE DHT22  // Tipe sensor
+#define DHTPIN 4         // Ubah ke pin yang kamu pakai
+#define DHTTYPE DHT11    // GANTI dengan DHT22
 
 DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Mulai membaca sensor DHT22...");
   dht.begin();
 }
 
 void loop() {
-  delay(2000);  // Baca setiap 2 detik
-
   float h = dht.readHumidity();
   float t = dht.readTemperature();
 
   if (isnan(h) || isnan(t)) {
     Serial.println("Gagal membaca dari sensor DHT22!");
-    return;
+  } else {
+    Serial.print("Suhu: ");
+    Serial.print(t);
+    Serial.print("°C  |  Kelembapan: ");
+    Serial.print(h);
+    Serial.println("%");
   }
 
-  Serial.print("Suhu: ");
-  Serial.print(t);
-  Serial.print("°C  |  Kelembapan: ");
-  Serial.print(h);
-  Serial.println("%");
+  delay(2000); // DHT22 hanya support 0.5 Hz (2 detik sekali)
 }
